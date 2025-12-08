@@ -1,227 +1,630 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import Header from '@/components/layout/Header';
-import BottomNav from '@/components/layout/BottomNav';
-import { mockCurrentUser, mockWorkerProfile } from '@/data/mockData';
-import { 
-  User, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Settings, 
-  CreditCard, 
-  HelpCircle, 
-  LogOut,
-  ChevronRight,
-  Shield,
-  Star,
-  Bell,
-  FileText,
-  Heart
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Link } from 'react-router-dom';
+// import { Card, CardContent } from '@/components/ui/card';
+// import { Button } from '@/components/ui/button';
+// import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+// import { Badge } from '@/components/ui/badge';
+// import Header from '@/components/layout/Header';
+// import BottomNav from '@/components/layout/BottomNav';
+// import { mockCurrentUser, mockWorkerProfile } from '@/data/mockData';
+// import {
+//   User,
+//   MapPin,
+//   Phone,
+//   Mail,
+//   Settings,
+//   CreditCard,
+//   HelpCircle,
+//   LogOut,
+//   ChevronRight,
+//   Shield,
+//   Star,
+//   Bell,
+//   FileText,
+//   Heart
+// } from 'lucide-react';
+// import { cn } from '@/lib/utils';
+// import { Link } from 'react-router-dom';
 
-interface MenuItemProps {
-  icon: React.ElementType;
-  label: string;
-  description?: string;
-  href?: string;
-  onClick?: () => void;
-  badge?: string;
-  danger?: boolean;
-}
+// interface MenuItemProps {
+//   icon: React.ElementType;
+//   label: string;
+//   description?: string;
+//   href?: string;
+//   onClick?: () => void;
+//   badge?: string;
+//   danger?: boolean;
+// }
 
-const MenuItem = ({ icon: Icon, label, description, href, onClick, badge, danger }: MenuItemProps) => {
-  const content = (
-    <div className={cn(
-      "flex items-center gap-3 p-3 rounded-xl transition-colors cursor-pointer",
-      danger ? "hover:bg-destructive/10" : "hover:bg-secondary"
-    )}>
-      <div className={cn(
-        "h-10 w-10 rounded-xl flex items-center justify-center",
-        danger ? "bg-destructive/10 text-destructive" : "bg-secondary text-foreground"
-      )}>
-        <Icon className="h-5 w-5" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className={cn(
-          "font-medium",
-          danger ? "text-destructive" : "text-foreground"
-        )}>
-          {label}
-        </p>
-        {description && (
-          <p className="text-xs text-muted-foreground truncate">{description}</p>
-        )}
-      </div>
-      {badge && (
-        <Badge variant="default" className="shrink-0">{badge}</Badge>
-      )}
-      <ChevronRight className={cn(
-        "h-4 w-4 shrink-0",
-        danger ? "text-destructive" : "text-muted-foreground"
-      )} />
-    </div>
-  );
+// const MenuItem = ({ icon: Icon, label, description, href, onClick, badge, danger }: MenuItemProps) => {
+//   const content = (
+//     <div className={cn(
+//       "flex items-center gap-3 p-3 rounded-xl transition-colors cursor-pointer",
+//       danger ? "hover:bg-destructive/10" : "hover:bg-secondary"
+//     )}>
+//       <div className={cn(
+//         "h-10 w-10 rounded-xl flex items-center justify-center",
+//         danger ? "bg-destructive/10 text-destructive" : "bg-secondary text-foreground"
+//       )}>
+//         <Icon className="h-5 w-5" />
+//       </div>
+//       <div className="flex-1 min-w-0">
+//         <p className={cn(
+//           "font-medium",
+//           danger ? "text-destructive" : "text-foreground"
+//         )}>
+//           {label}
+//         </p>
+//         {description && (
+//           <p className="text-xs text-muted-foreground truncate">{description}</p>
+//         )}
+//       </div>
+//       {badge && (
+//         <Badge variant="default" className="shrink-0">{badge}</Badge>
+//       )}
+//       <ChevronRight className={cn(
+//         "h-4 w-4 shrink-0",
+//         danger ? "text-destructive" : "text-muted-foreground"
+//       )} />
+//     </div>
+//   );
 
-  if (href) {
-    return <Link to={href}>{content}</Link>;
-  }
+//   if (href) {
+//     return <Link to={href}>{content}</Link>;
+//   }
 
-  return <div onClick={onClick}>{content}</div>;
+//   return <div onClick={onClick}>{content}</div>;
+// };
+
+// const Profile = () => {
+//   // Use mockCurrentUser for demo - in real app would come from auth
+//   const user = mockCurrentUser;
+//   const isWorker = user.role === 'worker';
+//   const workerData = isWorker ? mockWorkerProfile : null;
+
+//   return (
+//     <div className="min-h-screen bg-background pb-20">
+//       <Header showAuth={false} />
+
+//       <main className="container py-4 md:py-6">
+//         {/* Profile Header */}
+//         <Card className="mb-4 animate-fade-in">
+//           <CardContent className="p-4">
+//             <div className="flex items-center gap-4">
+//               <Avatar className="h-16 w-16 border-2 border-primary">
+//                 <AvatarImage src={user.avatar} alt={user.name} />
+//                 <AvatarFallback className="text-lg">{user.name.charAt(0)}</AvatarFallback>
+//               </Avatar>
+
+//               <div className="flex-1 min-w-0">
+//                 <div className="flex items-center gap-2">
+//                   <h1 className="text-lg font-semibold text-foreground truncate">
+//                     {user.name}
+//                   </h1>
+//                   {isWorker && workerData?.isVerified && (
+//                     <Shield className="h-4 w-4 text-primary shrink-0" />
+//                   )}
+//                 </div>
+
+//                 {isWorker && workerData && (
+//                   <div className="flex items-center gap-2 mt-0.5">
+//                     <Star className="h-4 w-4 fill-accent text-accent" />
+//                     <span className="text-sm font-medium">{workerData.rating}</span>
+//                     <span className="text-sm text-muted-foreground">
+//                       ({workerData.reviewCount} reviews)
+//                     </span>
+//                   </div>
+//                 )}
+
+//                 <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
+//                   <MapPin className="h-3.5 w-3.5" />
+//                   <span>{user.location}</span>
+//                 </div>
+//               </div>
+
+//               <Button variant="outline" size="sm">
+//                 Edit
+//               </Button>
+//             </div>
+
+//             {/* Contact Info */}
+//             <div className="flex flex-wrap gap-3 mt-4 pt-4 border-t border-border">
+//               <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+//                 <Phone className="h-4 w-4" />
+//                 <span>{user.phone}</span>
+//               </div>
+//               <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+//                 <Mail className="h-4 w-4" />
+//                 <span>{user.email}</span>
+//               </div>
+//             </div>
+
+//             {/* Worker Services */}
+//             {isWorker && workerData && (
+//               <div className="mt-4 pt-4 border-t border-border">
+//                 <p className="text-sm text-muted-foreground mb-2">Services</p>
+//                 <div className="flex flex-wrap gap-2">
+//                   {workerData.services.map((service) => (
+//                     <Badge key={service} variant="category">{service}</Badge>
+//                   ))}
+//                 </div>
+//               </div>
+//             )}
+//           </CardContent>
+//         </Card>
+
+//         {/* Menu Items */}
+//         <div className="space-y-2 animate-fade-in" style={{ animationDelay: '100ms' }}>
+//           <Card>
+//             <CardContent className="p-2">
+//               <MenuItem
+//                 icon={User}
+//                 label="Personal Information"
+//                 description="Manage your personal details"
+//               />
+//               <MenuItem
+//                 icon={Bell}
+//                 label="Notifications"
+//                 description="Customize notification preferences"
+//               />
+//               <MenuItem
+//                 icon={CreditCard}
+//                 label="Payment Methods"
+//                 description="Add or manage payment options"
+//               />
+//             </CardContent>
+//           </Card>
+
+//           <Card>
+//             <CardContent className="p-2">
+//               <MenuItem
+//                 icon={Heart}
+//                 label="Favorites"
+//                 description="Your saved helpers"
+//                 badge="3"
+//               />
+//               <MenuItem
+//                 icon={FileText}
+//                 label="Documents"
+//                 description="ID verification and certificates"
+//               />
+//               <MenuItem
+//                 icon={Settings}
+//                 label="Settings"
+//                 description="App preferences and security"
+//               />
+//             </CardContent>
+//           </Card>
+
+//           <Card>
+//             <CardContent className="p-2">
+//               <MenuItem
+//                 icon={HelpCircle}
+//                 label="Help & Support"
+//                 description="FAQs and customer support"
+//               />
+//               <MenuItem
+//                 icon={LogOut}
+//                 label="Log Out"
+//                 danger
+//                 onClick={() => {
+//                   // Handle logout
+//                 }}
+//               />
+//             </CardContent>
+//           </Card>
+//         </div>
+
+//         {/* App Version */}
+//         <p className="text-center text-xs text-muted-foreground mt-6 animate-fade-in" style={{ animationDelay: '200ms' }}>
+//           QuickConnect v1.0.0
+//         </p>
+//       </main>
+
+//       <BottomNav />
+//     </div>
+//   );
+// };
+
+// export default Profile;
+
+// src/pages/Profile.tsx
+import React, { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import Header from "@/components/layout/Header";
+import BottomNav from "@/components/layout/BottomNav";
+import {
+	User,
+	MapPin,
+	Phone,
+	Mail,
+	Settings,
+	CreditCard,
+	HelpCircle,
+	LogOut,
+	ChevronRight,
+	Shield,
+	Star,
+	Bell,
+	FileText,
+	Heart,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
+import { apiFetch } from "@/lib/apiClient";
+import { supabase } from "@/lib/supabaseClient";
+import { useAuth } from "@/contexts/AuthContext";
+
+const MenuItem = ({
+	icon: Icon,
+	label,
+	description,
+	href,
+	onClick,
+	badge,
+	danger,
+}: any) => {
+	const content = (
+		<div
+			className={cn(
+				"flex items-center gap-3 p-3 rounded-xl transition-colors cursor-pointer",
+				danger ? "hover:bg-destructive/10" : "hover:bg-secondary"
+			)}>
+			<div
+				className={cn(
+					"h-10 w-10 rounded-xl flex items-center justify-center",
+					danger
+						? "bg-destructive/10 text-destructive"
+						: "bg-secondary text-foreground"
+				)}>
+				<Icon className='h-5 w-5' />
+			</div>
+			<div className='flex-1 min-w-0'>
+				<p
+					className={cn(
+						"font-medium",
+						danger ? "text-destructive" : "text-foreground"
+					)}>
+					{label}
+				</p>
+				{description && (
+					<p className='text-xs text-muted-foreground truncate'>
+						{description}
+					</p>
+				)}
+			</div>
+			{badge && (
+				<Badge variant='default' className='shrink-0'>
+					{badge}
+				</Badge>
+			)}
+			<ChevronRight
+				className={cn(
+					"h-4 w-4 shrink-0",
+					danger ? "text-destructive" : "text-muted-foreground"
+				)}
+			/>
+		</div>
+	);
+
+	if (href) return <Link to={href}>{content}</Link>;
+	return <div onClick={onClick}>{content}</div>;
 };
 
-const Profile = () => {
-  // Use mockCurrentUser for demo - in real app would come from auth
-  const user = mockCurrentUser;
-  const isWorker = user.role === 'worker';
-  const workerData = isWorker ? mockWorkerProfile : null;
+const Profile: React.FC = () => {
+	const {
+		user: authUser,
+		loading: authLoading,
+		refreshUser,
+		logout,
+	} = useAuth();
+	const [profile, setProfile] = useState<any | null>(null);
+	const [editing, setEditing] = useState(false);
+	const [saving, setSaving] = useState(false);
+	const [form, setForm] = useState<any>({});
+	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
-  return (
-    <div className="min-h-screen bg-background pb-20">
-      <Header showAuth={false} />
-      
-      <main className="container py-4 md:py-6">
-        {/* Profile Header */}
-        <Card className="mb-4 animate-fade-in">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16 border-2 border-primary">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="text-lg">{user.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h1 className="text-lg font-semibold text-foreground truncate">
-                    {user.name}
-                  </h1>
-                  {isWorker && workerData?.isVerified && (
-                    <Shield className="h-4 w-4 text-primary shrink-0" />
-                  )}
-                </div>
-                
-                {isWorker && workerData && (
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <Star className="h-4 w-4 fill-accent text-accent" />
-                    <span className="text-sm font-medium">{workerData.rating}</span>
-                    <span className="text-sm text-muted-foreground">
-                      ({workerData.reviewCount} reviews)
-                    </span>
-                  </div>
-                )}
-                
-                <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
-                  <MapPin className="h-3.5 w-3.5" />
-                  <span>{user.location}</span>
-                </div>
-              </div>
-              
-              <Button variant="outline" size="sm">
-                Edit
-              </Button>
-            </div>
+	useEffect(() => {
+		if (!authUser && !authLoading) {
+			// not logged in — redirect to login
+			window.location.href = "/login";
+			return;
+		}
+		if (authUser) fetchProfile();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [authUser]);
 
-            {/* Contact Info */}
-            <div className="flex flex-wrap gap-3 mt-4 pt-4 border-t border-border">
-              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <Phone className="h-4 w-4" />
-                <span>{user.phone}</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <Mail className="h-4 w-4" />
-                <span>{user.email}</span>
-              </div>
-            </div>
+	async function fetchProfile() {
+		try {
+			const res = await apiFetch("/api/auth/me", { method: "GET" });
+			if (!res.ok) {
+				// unauthorized or error
+				if (res.status === 401) {
+					// handled by apiFetch refresh; if still 401 user will be redirected by AuthProvider
+				}
+				return;
+			}
+			const j = await res.json();
+			setProfile(j.data);
+			setForm({
+				full_name: j.data.full_name || "",
+				phone_number: j.data.phone_number || "",
+				location: j.data.location || "",
+			});
+		} catch (err) {
+			console.error(err);
+		}
+	}
 
-            {/* Worker Services */}
-            {isWorker && workerData && (
-              <div className="mt-4 pt-4 border-t border-border">
-                <p className="text-sm text-muted-foreground mb-2">Services</p>
-                <div className="flex flex-wrap gap-2">
-                  {workerData.services.map((service) => (
-                    <Badge key={service} variant="category">{service}</Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+	const handleChange = (k: string, v: any) =>
+		setForm((s: any) => ({ ...s, [k]: v }));
 
-        {/* Menu Items */}
-        <div className="space-y-2 animate-fade-in" style={{ animationDelay: '100ms' }}>
-          <Card>
-            <CardContent className="p-2">
-              <MenuItem 
-                icon={User} 
-                label="Personal Information" 
-                description="Manage your personal details"
-              />
-              <MenuItem 
-                icon={Bell} 
-                label="Notifications" 
-                description="Customize notification preferences"
-              />
-              <MenuItem 
-                icon={CreditCard} 
-                label="Payment Methods" 
-                description="Add or manage payment options"
-              />
-            </CardContent>
-          </Card>
+	const handleSave = async () => {
+		setSaving(true);
+		try {
+			let avatarUrl = profile?.profile_picture;
+			if (avatarFile) {
+				// upload to supabase (public bucket "avatars")
+				const key = `public/${profile.id}/${Date.now()}_${avatarFile.name}`;
+				const { data, error: uploadError } = await supabase.storage
+					.from("avatars")
+					.upload(key, avatarFile, { upsert: true });
+				if (uploadError) {
+					console.warn("Avatar upload failed:", uploadError);
+				} else {
+					// get public URL (assuming bucket is public)
+					avatarUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${key}`;
+				}
+			}
 
-          <Card>
-            <CardContent className="p-2">
-              <MenuItem 
-                icon={Heart} 
-                label="Favorites" 
-                description="Your saved helpers"
-                badge="3"
-              />
-              <MenuItem 
-                icon={FileText} 
-                label="Documents" 
-                description="ID verification and certificates"
-              />
-              <MenuItem 
-                icon={Settings} 
-                label="Settings" 
-                description="App preferences and security"
-              />
-            </CardContent>
-          </Card>
+			const payload: any = {
+				...form,
+				profile_picture: avatarUrl,
+			};
 
-          <Card>
-            <CardContent className="p-2">
-              <MenuItem 
-                icon={HelpCircle} 
-                label="Help & Support" 
-                description="FAQs and customer support"
-              />
-              <MenuItem 
-                icon={LogOut} 
-                label="Log Out" 
-                danger
-                onClick={() => {
-                  // Handle logout
-                }}
-              />
-            </CardContent>
-          </Card>
-        </div>
+			const res = await apiFetch("/api/users/profile", {
+				method: "PUT",
+				body: JSON.stringify(payload),
+			});
 
-        {/* App Version */}
-        <p className="text-center text-xs text-muted-foreground mt-6 animate-fade-in" style={{ animationDelay: '200ms' }}>
-          QuickConnect v1.0.0
-        </p>
-      </main>
+			if (!res.ok) {
+				const j = await res.json().catch(() => ({}));
+				throw new Error(j?.message || "Failed to update profile");
+			}
 
-      <BottomNav />
-    </div>
-  );
+			await fetchProfile();
+			setEditing(false);
+		} catch (e: any) {
+			alert(e.message || "Failed to save");
+		} finally {
+			setSaving(false);
+		}
+	};
+
+	if (authLoading || !profile) {
+		return (
+			<div className='min-h-screen bg-background pb-20'>
+				<Header showAuth={false} />
+				<main className='container py-6'>
+					<p>Loading profile…</p>
+				</main>
+				<BottomNav />
+			</div>
+		);
+	}
+
+	const isWorker = profile.user_type === "worker";
+
+	return (
+		<div className='min-h-screen bg-background pb-20'>
+			<Header showAuth={false} />
+
+			<main className='container py-4 md:py-6'>
+				<Card className='mb-4 animate-fade-in'>
+					<CardContent className='p-4'>
+						<div className='flex items-center gap-4'>
+							<Avatar className='h-16 w-16 border-2 border-primary'>
+								<AvatarImage
+									src={profile.profile_picture || undefined}
+									alt={profile.full_name}
+								/>
+								<AvatarFallback className='text-lg'>
+									{profile.full_name?.charAt(0)}
+								</AvatarFallback>
+							</Avatar>
+
+							<div className='flex-1 min-w-0'>
+								<div className='flex items-center gap-2'>
+									{!editing ? (
+										<h1 className='text-lg font-semibold text-foreground truncate'>
+											{profile.full_name}
+										</h1>
+									) : (
+										<input
+											value={form.full_name}
+											onChange={(e) =>
+												handleChange("full_name", e.target.value)
+											}
+											className='input input-bordered'
+										/>
+									)}
+									{isWorker && profile.is_verified && (
+										<Shield className='h-4 w-4 text-primary shrink-0' />
+									)}
+								</div>
+
+								{isWorker && (
+									<div className='flex items-center gap-2 mt-0.5'>
+										<Star className='h-4 w-4 fill-accent text-accent' />
+										<span className='text-sm font-medium'>
+											{profile.rating ?? 0}
+										</span>
+										<span className='text-sm text-muted-foreground'>
+											({profile.total_reviews ?? 0} reviews)
+										</span>
+									</div>
+								)}
+
+								<div className='flex items-center gap-1 mt-1 text-sm text-muted-foreground'>
+									<MapPin className='h-3.5 w-3.5' />
+									{!editing ? (
+										<span>{profile.location || "-"}</span>
+									) : (
+										<input
+											value={form.location}
+											onChange={(e) => handleChange("location", e.target.value)}
+											className='input input-sm input-bordered'
+										/>
+									)}
+								</div>
+							</div>
+
+							{!editing ? (
+								<Button
+									variant='outline'
+									size='sm'
+									onClick={() => setEditing(true)}>
+									Edit
+								</Button>
+							) : (
+								<div className='flex gap-2'>
+									<input
+										type='file'
+										accept='image/*'
+										onChange={(e) => setAvatarFile(e.target.files?.[0] || null)}
+									/>
+									<Button size='sm' onClick={handleSave} disabled={saving}>
+										{saving ? "Saving..." : "Save"}
+									</Button>
+									<Button
+										size='sm'
+										variant='ghost'
+										onClick={() => {
+											setEditing(false);
+											setForm({
+												full_name: profile.full_name,
+												phone_number: profile.phone_number,
+												location: profile.location,
+											});
+										}}>
+										Cancel
+									</Button>
+								</div>
+							)}
+						</div>
+
+						{/* Contact Info */}
+						<div className='flex flex-wrap gap-3 mt-4 pt-4 border-t border-border'>
+							<div className='flex items-center gap-1.5 text-sm text-muted-foreground'>
+								<Phone className='h-4 w-4' />
+								{!editing ? (
+									<span>{profile.phone_number || "-"}</span>
+								) : (
+									<input
+										value={form.phone_number}
+										onChange={(e) =>
+											handleChange("phone_number", e.target.value)
+										}
+										className='input input-sm input-bordered'
+									/>
+								)}
+							</div>
+							<div className='flex items-center gap-1.5 text-sm text-muted-foreground'>
+								<Mail className='h-4 w-4' />
+								<span>{profile.email}</span>
+							</div>
+						</div>
+
+						{/* Worker Services */}
+						{isWorker && profile.worker && (
+							<div className='mt-4 pt-4 border-t border-border'>
+								<p className='text-sm text-muted-foreground mb-2'>Services</p>
+								<div className='flex flex-wrap gap-2'>
+									{(profile.services || []).map((s: any) => (
+										<Badge key={s.id} variant='category'>
+											{s.name}
+										</Badge>
+									))}
+								</div>
+							</div>
+						)}
+					</CardContent>
+				</Card>
+
+				{/* Menu Items */}
+				<div
+					className='space-y-2 animate-fade-in'
+					style={{ animationDelay: "100ms" }}>
+					<Card>
+						<CardContent className='p-2'>
+							<MenuItem
+								icon={User}
+								label='Personal Information'
+								description='Manage your personal details'
+							/>
+							<MenuItem
+								icon={Bell}
+								label='Notifications'
+								description='Customize notification preferences'
+							/>
+							<MenuItem
+								icon={CreditCard}
+								label='Payment Methods'
+								description='Add or manage payment options'
+							/>
+						</CardContent>
+					</Card>
+
+					<Card>
+						<CardContent className='p-2'>
+							<MenuItem
+								icon={Heart}
+								label='Favorites'
+								description='Your saved helpers'
+								badge='3'
+							/>
+							<MenuItem
+								icon={FileText}
+								label='Documents'
+								description='ID verification and certificates'
+							/>
+							<MenuItem
+								icon={Settings}
+								label='Settings'
+								description='App preferences and security'
+							/>
+						</CardContent>
+					</Card>
+
+					<Card>
+						<CardContent className='p-2'>
+							<MenuItem
+								icon={HelpCircle}
+								label='Help & Support'
+								description='FAQs and customer support'
+							/>
+							<MenuItem
+								icon={LogOut}
+								label='Log Out'
+								danger
+								onClick={() => logout()}
+							/>
+						</CardContent>
+					</Card>
+				</div>
+
+				{/* App Version */}
+				<p
+					className='text-center text-xs text-muted-foreground mt-6 animate-fade-in'
+					style={{ animationDelay: "200ms" }}>
+					QuickConnect v1.0.0
+				</p>
+			</main>
+
+			<BottomNav />
+		</div>
+	);
 };
 
 export default Profile;
