@@ -1,6 +1,6 @@
-// src/contexts/AuthContext.tsx
+
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { apiFetch } from "@/lib/apiClient";
+import apiFetch, { loginApi, logoutLocal } from "@/lib/apiClient";
 
 export type CurrentUser = {
 	id: string;
@@ -12,12 +12,15 @@ export type CurrentUser = {
 	profile_picture?: string;
 };
 
-const AuthContext = createContext<{
+type AuthContextShape = {
 	user: CurrentUser | null;
 	loading: boolean;
 	refreshUser: () => Promise<void>;
+	login: (email: string, password: string) => Promise<any>;
 	logout: () => void;
-} | null>(null);
+};
+
+const AuthContext = createContext<AuthContextShape | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
@@ -31,11 +34,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 			const res = await apiFetch("/api/auth/me", { method: "GET" });
 			if (!res.ok) {
 				setUser(null);
-			} else {
-				const j = await res.json();
-				setUser(j.data);
+				setLoading(false);
+				return;
 			}
-		} catch {
+			const j = await res.json();
+			setUser(j.data ?? null);
+		} catch (err) {
+			console.error("refreshUser error", err);
 			setUser(null);
 		} finally {
 			setLoading(false);
@@ -46,16 +51,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		refreshUser();
 	}, []);
 
+	const login = async (email: string, password: string) => {
+		const j = await loginApi(email, password);
+		if (j?.success) {
+			// refresh user info
+			await refreshUser();
+		}
+		return j;
+	};
+
 	const logout = () => {
-		localStorage.removeItem("access_token");
-		localStorage.removeItem("refresh_token");
+		logoutLocal();
 		setUser(null);
-		// optionally redirect to login
 		window.location.href = "/login";
 	};
 
 	return (
-		<AuthContext.Provider value={{ user, loading, refreshUser, logout }}>
+		<AuthContext.Provider value={{ user, loading, refreshUser, login, logout }}>
 			{children}
 		</AuthContext.Provider>
 	);
@@ -63,6 +75,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
 export const useAuth = () => {
 	const ctx = useContext(AuthContext);
-	if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
+	if (!ctx) throw new Error("useAuth must be used in AuthProvider");
 	return ctx;
 };

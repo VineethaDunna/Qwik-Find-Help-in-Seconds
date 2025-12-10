@@ -1,330 +1,552 @@
-import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Header from '@/components/layout/Header';
-import BottomNav from '@/components/layout/BottomNav';
-import WorkerStatsCards from '@/components/worker/WorkerStatsCards';
-import WorkerServicesManager from '@/components/worker/WorkerServicesManager';
-import WorkerBookingCard from '@/components/worker/WorkerBookingCard';
-import WorkerProfileEditorFull from '@/components/worker/WorkerProfileEditorFull';
-import WorkerAnalytics from '@/components/worker/WorkerAnalytics';
-import WorkerWorkboard from '@/components/worker/WorkerWorkboard';
-import WorkerCustomerList from '@/components/worker/WorkerCustomerList';
-import { mockBookings, mockWorkerProfile, mockWorkerStats, mockWorkerServices, mockReviews } from '@/data/mockData';
-import { Booking, Worker, WorkerService } from '@/types';
-import { 
-  Bell,
-  Shield,
-  Star,
-  Briefcase,
-  ClipboardList,
-  User,
-  LayoutDashboard,
-  Users,
-  BarChart3,
-  CheckSquare
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Header from "@/components/layout/Header";
+import BottomNav from "@/components/layout/BottomNav";
+import WorkerStatsCards from "@/components/worker/WorkerStatsCards";
+import WorkerBookingCard from "@/components/worker/WorkerBookingCard";
+import WorkerProfileEditorFull from "@/components/worker/WorkerProfileEditorFull";
+import WorkerWorkboard from "@/components/worker/WorkerWorkboard";
+import WorkerCustomerList from "@/components/worker/WorkerCustomerList";
+import { mockWorkerStats, mockReviews } from "@/data/mockData";
+
+import { useAuth } from "@/contexts/AuthContext";
+import { workerApi } from "@/services/api";
+import {
+	Bell,
+	Shield,
+	Star,
+	ClipboardList,
+	User,
+	LayoutDashboard,
+	Users,
+	CheckSquare,
+	Loader2,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const WorkerDashboardPage = () => {
-  const [isAvailable, setIsAvailable] = useState(true);
-  const [bookings, setBookings] = useState<Booking[]>(mockBookings.filter(b => b.workerId === '1'));
-  const [activeTab, setActiveTab] = useState('overview');
-  const [bookingFilter, setBookingFilter] = useState<'all' | 'pending' | 'confirmed' | 'completed' | 'declined'>('all');
-  const [workerProfile, setWorkerProfile] = useState<Worker>(mockWorkerProfile);
-  const [workerServices, setWorkerServices] = useState<WorkerService[]>(mockWorkerServices);
+	const { user, logout } = useAuth();
 
-  const pendingRequests = bookings.filter(b => b.status === 'pending');
-  const confirmedBookings = bookings.filter(b => b.status === 'confirmed');
-  const completedBookings = bookings.filter(b => b.status === 'completed');
-  const declinedBookings = bookings.filter(b => b.status === 'declined');
+	const [loading, setLoading] = useState(true);
+	const [isAvailable, setIsAvailable] = useState(true);
+	const [bookings, setBookings] = useState<any[]>([]);
+	const [activeTab, setActiveTab] = useState("overview");
+	const [bookingFilter, setBookingFilter] = useState<
+		"all" | "pending" | "confirmed" | "completed" | "cancelled"
+	>("all");
+	const [workerProfile, setWorkerProfile] = useState<any | null>(null);
 
-  const handleAccept = (id: string) => {
-    setBookings(prev => 
-      prev.map(b => b.id === id ? { ...b, status: 'confirmed' as const } : b)
-    );
-    toast.success('Booking accepted!');
-  };
+	// Fetch worker data on mount
+	useEffect(() => {
+		fetchWorkerData();
+	}, []);
 
-  const handleDecline = (id: string) => {
-    setBookings(prev => 
-      prev.map(b => b.id === id ? { ...b, status: 'declined' as const } : b)
-    );
-    toast.info('Booking declined');
-  };
+	const fetchWorkerData = async () => {
+		try {
+			setLoading(true);
 
-  const handleComplete = (id: string) => {
-    setBookings(prev => 
-      prev.map(b => b.id === id ? { ...b, status: 'completed' as const } : b)
-    );
-    toast.success('Job marked as completed!');
-  };
+			// Profile
+			const profileRes = await workerApi.getMyProfile();
+			const profile = profileRes.data; // { id, full_name, is_verified, worker, services, ... }
 
-  const getFilteredBookings = () => {
-    switch (bookingFilter) {
-      case 'pending': return pendingRequests;
-      case 'confirmed': return confirmedBookings;
-      case 'completed': return completedBookings;
-      case 'declined': return declinedBookings;
-      default: return bookings;
-    }
-  };
+			setWorkerProfile(profile);
+			setIsAvailable(profile.worker?.availability_status === "available");
 
-  // Get unique customers from bookings
-  const customers = bookings.reduce((acc, booking) => {
-    if (!acc.find(c => c.userId === booking.userId)) {
-      acc.push({
-        userId: booking.userId,
-        userName: booking.userName || 'Unknown',
-        userAvatar: booking.userAvatar,
-        userPhone: booking.userPhone,
-        totalBookings: bookings.filter(b => b.userId === booking.userId).length,
-        totalSpent: bookings.filter(b => b.userId === booking.userId && b.status === 'completed').reduce((sum, b) => sum + b.price, 0),
-      });
-    }
-    return acc;
-  }, [] as Array<{ userId: string; userName: string; userAvatar?: string; userPhone?: string; totalBookings: number; totalSpent: number }>);
+			// Bookings
+			const bookingsRes = await workerApi.getMyBookings();
+			setBookings(bookingsRes.data || []);
+		} catch (error: any) {
+			console.error("Error fetching worker data:", error);
+			toast.error(
+				error.response?.data?.message || "Failed to load dashboard data"
+			);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-  return (
-    <div className="min-h-screen bg-background pb-20">
-      <Header showAuth={false} />
-      
-      <main className="container py-4 md:py-6">
-        {/* Welcome & Availability */}
-        <div className="mb-4 animate-fade-in">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <h1 className="text-xl font-bold text-foreground">
-                Hello, {workerProfile.name.split(' ')[0]} 👋
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                {isAvailable ? 'You are online and accepting jobs' : 'You are offline'}
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <span className={cn(
-                  "text-sm font-medium",
-                  isAvailable ? "text-primary" : "text-muted-foreground"
-                )}>
-                  {isAvailable ? 'Online' : 'Offline'}
-                </span>
-                <Switch 
-                  checked={isAvailable} 
-                  onCheckedChange={setIsAvailable}
-                />
-              </div>
-            </div>
-          </div>
+	// Booking groups
+	const pendingRequests = bookings.filter((b) => b.status === "pending");
+	const confirmedBookings = bookings.filter((b) => b.status === "confirmed");
+	const completedBookings = bookings.filter((b) => b.status === "completed");
+	const cancelledBookings = bookings.filter((b) => b.status === "cancelled");
 
-          {/* Verification Banner */}
-          {workerProfile.isVerified ? (
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-primary/10 border border-primary/20 mb-4">
-              <Shield className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium text-primary">Verified Professional</span>
-              <div className="ml-auto flex items-center gap-1">
-                <Star className="h-4 w-4 fill-accent text-accent" />
-                <span className="text-sm font-semibold">{workerProfile.rating}</span>
-                <span className="text-xs text-muted-foreground">({workerProfile.reviewCount})</span>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-accent/10 border border-accent/20 mb-4">
-              <Shield className="h-5 w-5 text-accent" />
-              <span className="text-sm font-medium text-foreground">Complete verification to get more bookings</span>
-            </div>
-          )}
-        </div>
+	const handleAvailabilityToggle = async (checked: boolean) => {
+		try {
+			await workerApi.updateProfile({
+				availability_status: checked ? "available" : "unavailable",
+			});
+			setIsAvailable(checked);
+			toast.success(checked ? "You are now online" : "You are now offline");
+		} catch (error: any) {
+			toast.error("Failed to update availability");
+		}
+	};
 
-        {/* Pending Requests Alert */}
-        {pendingRequests.length > 0 && (
-          <div 
-            className="flex items-center gap-3 p-3 rounded-xl bg-accent/10 border border-accent/20 mb-4 animate-fade-in cursor-pointer hover:bg-accent/15 transition-colors" 
-            style={{ animationDelay: '50ms' }}
-            onClick={() => { setActiveTab('bookings'); setBookingFilter('pending'); }}
-          >
-            <div className="relative">
-              <Bell className="h-5 w-5 text-accent" />
-              <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-accent animate-pulse" />
-            </div>
-            <span className="text-sm font-medium text-foreground flex-1">
-              You have {pendingRequests.length} new booking request{pendingRequests.length > 1 ? 's' : ''}
-            </span>
-            <Badge variant="default" className="bg-accent">
-              {pendingRequests.length}
-            </Badge>
-          </div>
-        )}
+	const handleAccept = async (id: string) => {
+		try {
+			await workerApi.acceptBooking(id);
+			setBookings((prev) =>
+				prev.map((b) => (b.id === id ? { ...b, status: "confirmed" } : b))
+			);
+			toast.success("Booking accepted!");
+		} catch (error: any) {
+			toast.error("Failed to accept booking");
+		}
+	};
 
-        {/* Main Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="animate-fade-in" style={{ animationDelay: '100ms' }}>
-          <TabsList className="w-full grid grid-cols-5 mb-4 h-auto p-1">
-            <TabsTrigger value="overview" className="flex flex-col items-center gap-0.5 py-2 px-1">
-              <LayoutDashboard className="h-4 w-4" />
-              <span className="text-[10px] hidden sm:inline">Overview</span>
-            </TabsTrigger>
-            <TabsTrigger value="bookings" className="flex flex-col items-center gap-0.5 py-2 px-1 relative">
-              <ClipboardList className="h-4 w-4" />
-              <span className="text-[10px] hidden sm:inline">Bookings</span>
-              {pendingRequests.length > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-accent text-[10px] flex items-center justify-center text-white font-bold">
-                  {pendingRequests.length}
-                </span>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="workboard" className="flex flex-col items-center gap-0.5 py-2 px-1">
-              <CheckSquare className="h-4 w-4" />
-              <span className="text-[10px] hidden sm:inline">To-Do</span>
-            </TabsTrigger>
-            <TabsTrigger value="services" className="flex flex-col items-center gap-0.5 py-2 px-1">
-              <Briefcase className="h-4 w-4" />
-              <span className="text-[10px] hidden sm:inline">Services</span>
-            </TabsTrigger>
-            <TabsTrigger value="profile" className="flex flex-col items-center gap-0.5 py-2 px-1">
-              <User className="h-4 w-4" />
-              <span className="text-[10px] hidden sm:inline">Profile</span>
-            </TabsTrigger>
-          </TabsList>
+	const handleDecline = async (id: string) => {
+		try {
+			await workerApi.declineBooking(id);
+			setBookings((prev) =>
+				prev.map((b) => (b.id === id ? { ...b, status: "cancelled" } : b))
+			);
+			toast.info("Booking declined");
+		} catch (error: any) {
+			toast.error("Failed to decline booking");
+		}
+	};
 
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-4">
-            <WorkerStatsCards stats={mockWorkerStats} />
-            
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 gap-3">
-              <div 
-                className="p-4 rounded-xl bg-muted/50 border cursor-pointer hover:bg-muted/70 transition-colors"
-                onClick={() => setActiveTab('bookings')}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <Users className="h-5 w-5 text-primary" />
-                  <Badge variant="outline">{customers.length}</Badge>
-                </div>
-                <p className="text-sm font-medium">Total Customers</p>
-                <p className="text-xs text-muted-foreground">Who booked you</p>
-              </div>
-              <div 
-                className="p-4 rounded-xl bg-muted/50 border cursor-pointer hover:bg-muted/70 transition-colors"
-                onClick={() => setActiveTab('workboard')}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <CheckSquare className="h-5 w-5 text-accent" />
-                  <Badge variant="outline">{confirmedBookings.length}</Badge>
-                </div>
-                <p className="text-sm font-medium">Upcoming Jobs</p>
-                <p className="text-xs text-muted-foreground">Ready to start</p>
-              </div>
-            </div>
+	const handleComplete = async (id: string) => {
+		try {
+			await workerApi.completeBooking(id);
+			setBookings((prev) =>
+				prev.map((b) => (b.id === id ? { ...b, status: "completed" } : b))
+			);
+			toast.success("Job marked as completed!");
+		} catch (error: any) {
+			toast.error("Failed to complete booking");
+		}
+	};
 
-            {/* Recent Reviews Preview */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold">Recent Feedback</h3>
-                <button className="text-xs text-primary">View all</button>
-              </div>
-              {mockReviews.slice(0, 2).map(review => (
-                <div key={review.id} className="p-3 rounded-xl bg-muted/30 border border-border/50">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium text-sm">{review.userName}</span>
-                    <div className="flex items-center gap-0.5">
-                      {Array.from({ length: review.rating }).map((_, i) => (
-                        <Star key={i} className="h-3 w-3 fill-accent text-accent" />
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground line-clamp-2">{review.comment}</p>
-                </div>
-              ))}
-            </div>
-          </TabsContent>
+	// Called by WorkerProfileEditorFull
+	const handleProfileUpdate = async (updates: any) => {
+		try {
+			// Update user profile (name, phone, location)
+			if (updates.full_name || updates.phone_number || updates.location) {
+				await workerApi.updateUserProfile({
+					full_name: updates.full_name,
+					phone_number: updates.phone_number,
+					location: updates.location,
+				});
+			}
 
-          {/* Bookings Tab */}
-          <TabsContent value="bookings" className="space-y-4">
-            {/* Booking Filters */}
-            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-              {(['all', 'pending', 'confirmed', 'completed', 'declined'] as const).map((filter) => {
-                const count = filter === 'all' ? bookings.length 
-                  : filter === 'pending' ? pendingRequests.length
-                  : filter === 'confirmed' ? confirmedBookings.length
-                  : filter === 'completed' ? completedBookings.length
-                  : declinedBookings.length;
-                
-                return (
-                  <Badge
-                    key={filter}
-                    variant={bookingFilter === filter ? 'default' : 'category'}
-                    className="cursor-pointer capitalize px-3 py-1.5 whitespace-nowrap"
-                    onClick={() => setBookingFilter(filter)}
-                  >
-                    {filter}
-                    <span className="ml-1.5 text-xs opacity-70">({count})</span>
-                  </Badge>
-                );
-              })}
-            </div>
+			// Update worker profile (hourly_rate, experience, bio, availability_status)
+			if (
+				updates.hourly_rate ||
+				updates.experience_years ||
+				updates.bio ||
+				updates.availability_status
+			) {
+				await workerApi.updateProfile({
+					hourly_rate: updates.hourly_rate,
+					experience_years: updates.experience_years,
+					bio: updates.bio,
+					availability_status: updates.availability_status,
+				});
+			}
 
-            {/* Customer List Toggle */}
-            <WorkerCustomerList customers={customers} />
+			toast.success("Profile updated successfully");
+			fetchWorkerData(); // Refresh
+		} catch (error: any) {
+			toast.error("Failed to update profile");
+		}
+	};
 
-            {/* Bookings List */}
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                {bookingFilter === 'all' ? 'All' : bookingFilter} Bookings
-              </h3>
-              {getFilteredBookings().length > 0 ? (
-                getFilteredBookings().map((booking) => (
-                  <WorkerBookingCard
-                    key={booking.id}
-                    booking={booking}
-                    onAccept={handleAccept}
-                    onDecline={handleDecline}
-                    onComplete={handleComplete}
-                  />
-                ))
-              ) : (
-                <div className="text-center py-12">
-                  <div className="text-4xl mb-3">📭</div>
-                  <p className="text-muted-foreground font-medium">No {bookingFilter} bookings</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {bookingFilter === 'pending' ? 'New requests will appear here' : 'Check back later'}
-                  </p>
-                </div>
-              )}
-            </div>
-          </TabsContent>
+	// Called with array of service IDs
+	const handleServicesUpdate = async (serviceIds: string[]) => {
+		try {
+			await workerApi.updateServices(serviceIds);
+			toast.success("Services updated successfully");
+			fetchWorkerData(); // Refresh
+		} catch (error: any) {
+			toast.error("Failed to update services");
+		}
+	};
 
-          {/* Workboard Tab */}
-          <TabsContent value="workboard">
-            <WorkerWorkboard 
-              bookings={confirmedBookings} 
-              onComplete={handleComplete}
-            />
-          </TabsContent>
+	const handleLogout = async () => {
+		try {
+			await logout(); // same behaviour as Profile.tsx
+			// after this, your global auth / route guard should push to /login
+		} catch (err) {
+			console.error(err);
+			toast.error("Failed to logout");
+		}
+	};
 
-          {/* Services Tab */}
-          <TabsContent value="services" className="space-y-4">
-            <WorkerServicesManager 
-              services={workerServices} 
-              onServicesChange={setWorkerServices} 
-            />
-            <WorkerAnalytics stats={mockWorkerStats} reviews={mockReviews} />
-          </TabsContent>
+	const getFilteredBookings = () => {
+		switch (bookingFilter) {
+			case "pending":
+				return pendingRequests;
+			case "confirmed":
+				return confirmedBookings;
+			case "completed":
+				return completedBookings;
+			case "cancelled":
+				return cancelledBookings;
+			default:
+				return bookings;
+		}
+	};
 
-          {/* Profile Tab */}
-          <TabsContent value="profile">
-            <WorkerProfileEditorFull 
-              profile={workerProfile} 
-              onProfileChange={setWorkerProfile} 
-            />
-          </TabsContent>
-        </Tabs>
-      </main>
+	// Unique customers from bookings
+	const customers = bookings.reduce(
+		(acc, booking) => {
+			const userId = booking.user?.id || booking.user_id;
+			if (!userId) return acc;
 
-      <BottomNav />
-    </div>
-  );
+			if (!acc.find((c) => c.userId === userId)) {
+				acc.push({
+					userId,
+					userName: booking.user?.full_name || "Unknown",
+					userAvatar: booking.user?.profile_picture,
+					userPhone: booking.user?.phone_number,
+					totalBookings: bookings.filter(
+						(b) => (b.user?.id || b.user_id) === userId
+					).length,
+					totalSpent: bookings
+						.filter(
+							(b) =>
+								(b.user?.id || b.user_id) === userId && b.status === "completed"
+						)
+						.reduce((sum, b) => sum + (b.total_amount || 0), 0),
+				});
+			}
+			return acc;
+		},
+		[] as Array<{
+			userId: string;
+			userName: string;
+			userAvatar?: string;
+			userPhone?: string;
+			totalBookings: number;
+			totalSpent: number;
+		}>
+	);
+
+	if (loading) {
+		return (
+			<div className='min-h-screen bg-background pb-20'>
+				<Header showAuth={false} />
+				<main className='container py-4 md:py-6'>
+					<div className='flex items-center justify-center min-h-[60vh]'>
+						<div className='text-center space-y-3'>
+							<Loader2 className='h-8 w-8 animate-spin text-primary mx-auto' />
+							<p className='text-sm text-muted-foreground'>
+								Loading your dashboard...
+							</p>
+						</div>
+					</div>
+				</main>
+				<BottomNav />
+			</div>
+		);
+	}
+
+	if (!workerProfile) {
+		return (
+			<div className='min-h-screen bg-gray-50 pb-20'>
+				<Header />
+				<main className='container py-4 md:py-6'>
+					<div className='flex items-center justify-center min-h-[60vh]'>
+						<div className='text-center'>
+							<p className='text-gray-600'>Failed to load worker profile</p>
+						</div>
+					</div>
+				</main>
+				<BottomNav />
+			</div>
+		);
+	}
+
+	const workerName = workerProfile.full_name || user?.full_name || "Worker";
+	const isVerified = workerProfile.is_verified || false;
+	const rating = workerProfile.worker?.rating || 0;
+	const reviewCount = workerProfile.worker?.total_reviews || 0;
+
+	return (
+		<div className='min-h-screen bg-gray-50 pb-20'>
+			<Header />
+
+			<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6'>
+				{/* Welcome & Availability */}
+				<div className='bg-white rounded-xl shadow-sm p-6'>
+					<div className='flex items-center justify-between'>
+						<div className='flex-1'>
+							<div className='flex items-center gap-3 mb-2'>
+								<h1 className='text-2xl font-bold text-gray-900'>
+									Hello, {workerName.split(" ")[0]} 👋
+								</h1>
+							</div>
+							<p className='text-gray-600 text-sm'>
+								{isAvailable
+									? "You are online and accepting jobs"
+									: "You are offline"}
+							</p>
+						</div>
+
+						<div className='flex items-center gap-3'>
+							<Switch
+								checked={isAvailable}
+								onCheckedChange={handleAvailabilityToggle}
+								className='mt-2'
+							/>
+						</div>
+					</div>
+
+					{/* Verification Banner */}
+					{isVerified ? (
+						<div className='mt-4 flex items-center justify-between bg-green-50 rounded-lg p-3'>
+							<div className='flex items-center gap-2'>
+								<Shield className='w-5 h-5 text-green-600' />
+								<span className='text-sm font-medium text-green-900'>
+									Verified Professional
+								</span>
+							</div>
+							<div className='flex items-center gap-2 text-sm'>
+								<div className='flex items-center gap-1'>
+									<Star className='w-4 h-4 fill-yellow-400 text-yellow-400' />
+									<span className='font-medium text-gray-900'>
+										{rating.toFixed(1)}
+									</span>
+								</div>
+								<span className='text-gray-500'>({reviewCount})</span>
+							</div>
+						</div>
+					) : (
+						<div className='mt-4 flex items-center gap-2 bg-blue-50 rounded-lg p-3'>
+							<Bell className='w-5 h-5 text-blue-600' />
+							<span className='text-sm text-blue-900'>
+								Complete verification to get more bookings
+							</span>
+						</div>
+					)}
+				</div>
+
+				{/* Pending Requests Alert */}
+				{pendingRequests.length > 0 && (
+					<div
+						className='bg-orange-50 border border-orange-200 rounded-xl p-4 cursor-pointer hover:bg-orange-100 transition-colors'
+						onClick={() => {
+							setActiveTab("bookings");
+							setBookingFilter("pending");
+						}}>
+						<div className='flex items-center justify-between'>
+							<div className='flex items-center gap-3'>
+								<Bell className='w-5 h-5 text-orange-600' />
+							</div>
+							<span className='text-sm font-medium text-orange-900'>
+								You have {pendingRequests.length} new booking request
+								{pendingRequests.length > 1 ? "s" : ""}
+							</span>
+							<Badge variant='destructive' className='bg-orange-600'>
+								{pendingRequests.length}
+							</Badge>
+						</div>
+					</div>
+				)}
+
+				{/* Main Tabs */}
+				<Tabs
+					value={activeTab}
+					onValueChange={setActiveTab}
+					className='space-y-4'>
+					<TabsList className='grid w-full grid-cols-4 h-auto p-1'>
+						<TabsTrigger value='overview' className='flex items-center gap-2'>
+							<LayoutDashboard className='w-4 h-4' />
+							Overview
+						</TabsTrigger>
+						<TabsTrigger
+							value='bookings'
+							className='flex items-center gap-2 relative'>
+							<ClipboardList className='w-4 h-4' />
+							Bookings
+							{pendingRequests.length > 0 && (
+								<Badge
+									variant='destructive'
+									className='ml-1 h-5 min-w-5 p-0 flex items-center justify-center text-xs'>
+									{pendingRequests.length}
+								</Badge>
+							)}
+						</TabsTrigger>
+						<TabsTrigger value='workboard' className='flex items-center gap-2'>
+							<CheckSquare className='w-4 h-4' />
+							To-Do
+						</TabsTrigger>
+						<TabsTrigger value='profile' className='flex items-center gap-2'>
+							<User className='w-4 h-4' />
+							Profile
+						</TabsTrigger>
+					</TabsList>
+
+					{/* Overview Tab */}
+					<TabsContent value='overview' className='space-y-6'>
+						<WorkerStatsCards stats={mockWorkerStats} />
+
+						{/* Quick Stats */}
+						<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+							<div
+								className='bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition-shadow'
+								onClick={() => setActiveTab("bookings")}>
+								<div className='flex items-center justify-between mb-4'>
+									<Users className='w-8 h-8 text-blue-600' />
+									<span className='text-3xl font-bold text-gray-900'>
+										{customers.length}
+									</span>
+								</div>
+								<h3 className='text-lg font-semibold text-gray-900'>
+									Total Customers
+								</h3>
+								<p className='text-sm text-gray-500 mt-1'>Who booked you</p>
+							</div>
+
+							<div
+								className='bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-md transition-shadow'
+								onClick={() => setActiveTab("workboard")}>
+								<div className='flex items-center justify-between mb-4'>
+									<CheckSquare className='w-8 h-8 text-green-600' />
+									<span className='text-3xl font-bold text-gray-900'>
+										{confirmedBookings.length}
+									</span>
+								</div>
+								<h3 className='text-lg font-semibold text-gray-900'>
+									Upcoming Jobs
+								</h3>
+								<p className='text-sm text-gray-500 mt-1'>Ready to start</p>
+							</div>
+						</div>
+
+						{/* Recent Reviews Preview */}
+						<div className='bg-white rounded-xl shadow-sm p-6'>
+							<div className='flex items-center justify-between mb-4'>
+								<h2 className='text-lg font-semibold text-gray-900'>
+									Recent Feedback
+								</h2>
+								<button className='text-sm text-blue-600 hover:text-blue-700'>
+									View all
+								</button>
+							</div>
+							{mockReviews.slice(0, 2).map((review) => (
+								<div
+									key={review.id}
+									className='border-b last:border-0 py-4 first:pt-0'>
+									<div className='flex items-start justify-between mb-2'>
+										<span className='font-medium text-gray-900'>
+											{review.userName}
+										</span>
+										<div className='flex items-center gap-1'>
+											{Array.from({ length: review.rating }).map((_, i) => (
+												<Star
+													key={i}
+													className='w-4 h-4 fill-yellow-400 text-yellow-400'
+												/>
+											))}
+										</div>
+									</div>
+									<p className='text-sm text-gray-600'>{review.comment}</p>
+								</div>
+							))}
+						</div>
+					</TabsContent>
+
+					{/* Bookings Tab */}
+					<TabsContent value='bookings' className='space-y-4'>
+						{/* Booking Filters */}
+						<div className='flex gap-2 overflow-x-auto pb-2'>
+							{(
+								[
+									"all",
+									"pending",
+									"confirmed",
+									"completed",
+									"cancelled",
+								] as const
+							).map((filter) => {
+								const count =
+									filter === "all"
+										? bookings.length
+										: filter === "pending"
+										? pendingRequests.length
+										: filter === "confirmed"
+										? confirmedBookings.length
+										: filter === "completed"
+										? completedBookings.length
+										: cancelledBookings.length;
+
+								return (
+									<button
+										key={filter}
+										onClick={() => setBookingFilter(filter)}
+										className={cn(
+											"px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors",
+											bookingFilter === filter
+												? "bg-blue-600 text-white"
+												: "bg-white text-gray-700 hover:bg-gray-100"
+										)}>
+										{filter} ({count})
+									</button>
+								);
+							})}
+						</div>
+
+						{/* Customers */}
+						<WorkerCustomerList customers={customers} />
+
+						{/* Bookings List */}
+						<div className='bg-white rounded-xl shadow-sm p-6'>
+							<h2 className='text-lg font-semibold text-gray-900 mb-4'>
+								{bookingFilter === "all" ? "All" : bookingFilter} Bookings
+							</h2>
+							{getFilteredBookings().length > 0 ? (
+								getFilteredBookings().map((booking) => (
+									<WorkerBookingCard
+										key={booking.id}
+										booking={booking}
+										onAccept={handleAccept}
+										onDecline={handleDecline}
+										onComplete={handleComplete}
+									/>
+								))
+							) : (
+								<div className='text-center py-12'>
+									<div className='text-4xl mb-4'>📭</div>
+									<h3 className='text-lg font-medium text-gray-900 mb-2'>
+										No {bookingFilter} bookings
+									</h3>
+									<p className='text-sm text-gray-500'>
+										{bookingFilter === "pending"
+											? "New requests will appear here"
+											: "Check back later"}
+									</p>
+								</div>
+							)}
+						</div>
+					</TabsContent>
+
+					{/* Workboard Tab */}
+					<TabsContent value='workboard'>
+						<WorkerWorkboard
+							bookings={confirmedBookings}
+							onComplete={handleComplete}
+						/>
+					</TabsContent>
+
+					{/* Profile Tab */}
+					<TabsContent value='profile'>
+						<WorkerProfileEditorFull
+							profile={workerProfile}
+							onProfileUpdate={handleProfileUpdate}
+							onServicesUpdate={handleServicesUpdate}
+							onLogout={handleLogout}
+						/>
+					</TabsContent>
+				</Tabs>
+			</div>
+		</div>
+	);
 };
 
 export default WorkerDashboardPage;

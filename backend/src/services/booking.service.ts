@@ -178,9 +178,12 @@ export class BookingService {
 		}
 
 		// Validate status transitions
+		// inside BookingService.updateBookingStatus
+
+		// Validate status transitions
 		const allowedTransitions: Record<string, string[]> = {
 			pending: ["confirmed", "cancelled"],
-			confirmed: ["in_progress", "cancelled"],
+			confirmed: ["in_progress", "completed", "cancelled"], // <-- allow completed
 			in_progress: ["completed", "cancelled"],
 			completed: [],
 			cancelled: [],

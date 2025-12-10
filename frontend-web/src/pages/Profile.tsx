@@ -1,233 +1,6 @@
-// import { Card, CardContent } from '@/components/ui/card';
-// import { Button } from '@/components/ui/button';
-// import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-// import { Badge } from '@/components/ui/badge';
-// import Header from '@/components/layout/Header';
-// import BottomNav from '@/components/layout/BottomNav';
-// import { mockCurrentUser, mockWorkerProfile } from '@/data/mockData';
-// import {
-//   User,
-//   MapPin,
-//   Phone,
-//   Mail,
-//   Settings,
-//   CreditCard,
-//   HelpCircle,
-//   LogOut,
-//   ChevronRight,
-//   Shield,
-//   Star,
-//   Bell,
-//   FileText,
-//   Heart
-// } from 'lucide-react';
-// import { cn } from '@/lib/utils';
-// import { Link } from 'react-router-dom';
-
-// interface MenuItemProps {
-//   icon: React.ElementType;
-//   label: string;
-//   description?: string;
-//   href?: string;
-//   onClick?: () => void;
-//   badge?: string;
-//   danger?: boolean;
-// }
-
-// const MenuItem = ({ icon: Icon, label, description, href, onClick, badge, danger }: MenuItemProps) => {
-//   const content = (
-//     <div className={cn(
-//       "flex items-center gap-3 p-3 rounded-xl transition-colors cursor-pointer",
-//       danger ? "hover:bg-destructive/10" : "hover:bg-secondary"
-//     )}>
-//       <div className={cn(
-//         "h-10 w-10 rounded-xl flex items-center justify-center",
-//         danger ? "bg-destructive/10 text-destructive" : "bg-secondary text-foreground"
-//       )}>
-//         <Icon className="h-5 w-5" />
-//       </div>
-//       <div className="flex-1 min-w-0">
-//         <p className={cn(
-//           "font-medium",
-//           danger ? "text-destructive" : "text-foreground"
-//         )}>
-//           {label}
-//         </p>
-//         {description && (
-//           <p className="text-xs text-muted-foreground truncate">{description}</p>
-//         )}
-//       </div>
-//       {badge && (
-//         <Badge variant="default" className="shrink-0">{badge}</Badge>
-//       )}
-//       <ChevronRight className={cn(
-//         "h-4 w-4 shrink-0",
-//         danger ? "text-destructive" : "text-muted-foreground"
-//       )} />
-//     </div>
-//   );
-
-//   if (href) {
-//     return <Link to={href}>{content}</Link>;
-//   }
-
-//   return <div onClick={onClick}>{content}</div>;
-// };
-
-// const Profile = () => {
-//   // Use mockCurrentUser for demo - in real app would come from auth
-//   const user = mockCurrentUser;
-//   const isWorker = user.role === 'worker';
-//   const workerData = isWorker ? mockWorkerProfile : null;
-
-//   return (
-//     <div className="min-h-screen bg-background pb-20">
-//       <Header showAuth={false} />
-
-//       <main className="container py-4 md:py-6">
-//         {/* Profile Header */}
-//         <Card className="mb-4 animate-fade-in">
-//           <CardContent className="p-4">
-//             <div className="flex items-center gap-4">
-//               <Avatar className="h-16 w-16 border-2 border-primary">
-//                 <AvatarImage src={user.avatar} alt={user.name} />
-//                 <AvatarFallback className="text-lg">{user.name.charAt(0)}</AvatarFallback>
-//               </Avatar>
-
-//               <div className="flex-1 min-w-0">
-//                 <div className="flex items-center gap-2">
-//                   <h1 className="text-lg font-semibold text-foreground truncate">
-//                     {user.name}
-//                   </h1>
-//                   {isWorker && workerData?.isVerified && (
-//                     <Shield className="h-4 w-4 text-primary shrink-0" />
-//                   )}
-//                 </div>
-
-//                 {isWorker && workerData && (
-//                   <div className="flex items-center gap-2 mt-0.5">
-//                     <Star className="h-4 w-4 fill-accent text-accent" />
-//                     <span className="text-sm font-medium">{workerData.rating}</span>
-//                     <span className="text-sm text-muted-foreground">
-//                       ({workerData.reviewCount} reviews)
-//                     </span>
-//                   </div>
-//                 )}
-
-//                 <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
-//                   <MapPin className="h-3.5 w-3.5" />
-//                   <span>{user.location}</span>
-//                 </div>
-//               </div>
-
-//               <Button variant="outline" size="sm">
-//                 Edit
-//               </Button>
-//             </div>
-
-//             {/* Contact Info */}
-//             <div className="flex flex-wrap gap-3 mt-4 pt-4 border-t border-border">
-//               <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-//                 <Phone className="h-4 w-4" />
-//                 <span>{user.phone}</span>
-//               </div>
-//               <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-//                 <Mail className="h-4 w-4" />
-//                 <span>{user.email}</span>
-//               </div>
-//             </div>
-
-//             {/* Worker Services */}
-//             {isWorker && workerData && (
-//               <div className="mt-4 pt-4 border-t border-border">
-//                 <p className="text-sm text-muted-foreground mb-2">Services</p>
-//                 <div className="flex flex-wrap gap-2">
-//                   {workerData.services.map((service) => (
-//                     <Badge key={service} variant="category">{service}</Badge>
-//                   ))}
-//                 </div>
-//               </div>
-//             )}
-//           </CardContent>
-//         </Card>
-
-//         {/* Menu Items */}
-//         <div className="space-y-2 animate-fade-in" style={{ animationDelay: '100ms' }}>
-//           <Card>
-//             <CardContent className="p-2">
-//               <MenuItem
-//                 icon={User}
-//                 label="Personal Information"
-//                 description="Manage your personal details"
-//               />
-//               <MenuItem
-//                 icon={Bell}
-//                 label="Notifications"
-//                 description="Customize notification preferences"
-//               />
-//               <MenuItem
-//                 icon={CreditCard}
-//                 label="Payment Methods"
-//                 description="Add or manage payment options"
-//               />
-//             </CardContent>
-//           </Card>
-
-//           <Card>
-//             <CardContent className="p-2">
-//               <MenuItem
-//                 icon={Heart}
-//                 label="Favorites"
-//                 description="Your saved helpers"
-//                 badge="3"
-//               />
-//               <MenuItem
-//                 icon={FileText}
-//                 label="Documents"
-//                 description="ID verification and certificates"
-//               />
-//               <MenuItem
-//                 icon={Settings}
-//                 label="Settings"
-//                 description="App preferences and security"
-//               />
-//             </CardContent>
-//           </Card>
-
-//           <Card>
-//             <CardContent className="p-2">
-//               <MenuItem
-//                 icon={HelpCircle}
-//                 label="Help & Support"
-//                 description="FAQs and customer support"
-//               />
-//               <MenuItem
-//                 icon={LogOut}
-//                 label="Log Out"
-//                 danger
-//                 onClick={() => {
-//                   // Handle logout
-//                 }}
-//               />
-//             </CardContent>
-//           </Card>
-//         </div>
-
-//         {/* App Version */}
-//         <p className="text-center text-xs text-muted-foreground mt-6 animate-fade-in" style={{ animationDelay: '200ms' }}>
-//           QuickConnect v1.0.0
-//         </p>
-//       </main>
-
-//       <BottomNav />
-//     </div>
-//   );
-// };
-
-// export default Profile;
-
 // src/pages/Profile.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -246,71 +19,31 @@ import {
 	ChevronRight,
 	Shield,
 	Star,
-	Bell,
-	FileText,
-	Heart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Link } from "react-router-dom";
 import { apiFetch } from "@/lib/apiClient";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
+import { updateUserProfile } from "@/services/api";
 
-const MenuItem = ({
-	icon: Icon,
-	label,
-	description,
-	href,
-	onClick,
-	badge,
-	danger,
-}: any) => {
-	const content = (
-		<div
-			className={cn(
-				"flex items-center gap-3 p-3 rounded-xl transition-colors cursor-pointer",
-				danger ? "hover:bg-destructive/10" : "hover:bg-secondary"
-			)}>
-			<div
-				className={cn(
-					"h-10 w-10 rounded-xl flex items-center justify-center",
-					danger
-						? "bg-destructive/10 text-destructive"
-						: "bg-secondary text-foreground"
-				)}>
-				<Icon className='h-5 w-5' />
-			</div>
-			<div className='flex-1 min-w-0'>
-				<p
-					className={cn(
-						"font-medium",
-						danger ? "text-destructive" : "text-foreground"
-					)}>
-					{label}
-				</p>
-				{description && (
-					<p className='text-xs text-muted-foreground truncate'>
-						{description}
-					</p>
-				)}
-			</div>
-			{badge && (
-				<Badge variant='default' className='shrink-0'>
-					{badge}
-				</Badge>
-			)}
-			<ChevronRight
-				className={cn(
-					"h-4 w-4 shrink-0",
-					danger ? "text-destructive" : "text-muted-foreground"
-				)}
-			/>
-		</div>
-	);
+/**
+ * Profile page
+ * - View mode by default
+ * - Click Edit => single form for editing everything
+ * - Cancel => revert to view mode with original data
+ * - Save => upload avatar (if changed) then call updateUserProfile -> refetch profile
+ */
 
-	if (href) return <Link to={href}>{content}</Link>;
-	return <div onClick={onClick}>{content}</div>;
-};
+/* Default avatars (replace with your own assets if needed) */
+const DEFAULT_AVATARS = [
+	"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+	"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
+	"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+	"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+	"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+	"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
+	"https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face",
+];
 
 const Profile: React.FC = () => {
 	const {
@@ -322,8 +55,18 @@ const Profile: React.FC = () => {
 	const [profile, setProfile] = useState<any | null>(null);
 	const [editing, setEditing] = useState(false);
 	const [saving, setSaving] = useState(false);
-	const [form, setForm] = useState<any>({});
+	const [form, setForm] = useState<any>({
+		full_name: "",
+		phone_number: "",
+		location: "",
+		email: "",
+		profile_picture: "",
+	});
+
+	// file input and preview
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
+	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+	const fileRef = useRef<HTMLInputElement | null>(null);
 
 	useEffect(() => {
 		if (!authUser && !authLoading) {
@@ -338,65 +81,188 @@ const Profile: React.FC = () => {
 	async function fetchProfile() {
 		try {
 			const res = await apiFetch("/api/auth/me", { method: "GET" });
-			if (!res.ok) {
-				// unauthorized or error
-				if (res.status === 401) {
-					// handled by apiFetch refresh; if still 401 user will be redirected by AuthProvider
-				}
-				return;
-			}
+			if (!res.ok) return;
 			const j = await res.json();
-			setProfile(j.data);
+			const data = j.data;
+			setProfile(data);
 			setForm({
-				full_name: j.data.full_name || "",
-				phone_number: j.data.phone_number || "",
-				location: j.data.location || "",
+				full_name: data.full_name || "",
+				phone_number: data.phone_number || "",
+				location: data.location || "",
+				email: data.email || "",
+				profile_picture: data.profile_picture || "",
 			});
+			setAvatarPreview(null);
+			setAvatarFile(null);
 		} catch (err) {
-			console.error(err);
+			console.error("fetchProfile error", err);
 		}
 	}
 
-	const handleChange = (k: string, v: any) =>
-		setForm((s: any) => ({ ...s, [k]: v }));
+	const beginEdit = () => {
+		if (!profile) return;
+		setForm({
+			full_name: profile.full_name || "",
+			phone_number: profile.phone_number || "",
+			location: profile.location || "",
+			email: profile.email || "",
+			profile_picture: profile.profile_picture || "",
+		});
+		setAvatarPreview(null);
+		setAvatarFile(null);
+		setEditing(true);
+	};
 
+	const cancelEdit = () => {
+		// revert state
+		setForm({
+			full_name: profile.full_name || "",
+			phone_number: profile.phone_number || "",
+			location: profile.location || "",
+			email: profile.email || "",
+			profile_picture: profile.profile_picture || "",
+		});
+		setAvatarFile(null);
+		setAvatarPreview(null);
+		setEditing(false);
+	};
+
+	function handleFieldChange(key: string, value: any) {
+		setForm((s: any) => ({ ...s, [key]: value }));
+	}
+
+	function handleChooseDefaultAvatar(url: string) {
+		setAvatarFile(null);
+		setAvatarPreview(url);
+		setForm((s: any) => ({ ...s, profile_picture: url }));
+	}
+
+	// handle file selection (preview + keep file)
+	function handleFileSelect(f?: File | null) {
+		if (!f) return;
+		setAvatarFile(f);
+		const localUrl = URL.createObjectURL(f);
+		setAvatarPreview(localUrl);
+		// DON'T store the blob url as the final profile picture — it's only for preview
+		setForm((s: any) => ({ ...s, profile_picture: localUrl }));
+	}
+
+	// upload file to Supabase, return public URL or null and log details
+	async function uploadAvatarToSupabase(file: File, userId?: string | number) {
+		try {
+			console.log("[UPLOAD] start", file.name, file.type, file.size);
+			const ext = file.name.split(".").pop() || "jpg";
+			// path inside the bucket (no leading slash)
+			const filePath = `public/${userId || "u"}/${Date.now()}_${Math.random()
+				.toString(36)
+				.slice(2, 8)}.${ext}`;
+
+			// attempt upload
+			const uploadResp = await supabase.storage
+				.from("avatars")
+				.upload(filePath, file, { upsert: true });
+			console.log("[UPLOAD] uploadResp", uploadResp);
+
+			if (uploadResp.error) {
+				console.error("[UPLOAD] supabase upload error:", uploadResp.error);
+				// return null so caller knows upload failed
+				return null;
+			}
+
+			// get public URL via Supabase helper (preferred)
+			const { data: publicData, error: publicErr } = supabase.storage
+				.from("avatars")
+				.getPublicUrl(filePath);
+			if (publicErr) {
+				console.warn("[UPLOAD] getPublicUrl error:", publicErr);
+				// fallback: construct manually (only if bucket is public)
+				const fallback = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${filePath}`;
+				console.warn("[UPLOAD] using fallback public url:", fallback);
+				return fallback;
+			}
+			const publicUrl = (publicData as any)?.publicUrl;
+			console.log("[UPLOAD] publicUrl:", publicUrl);
+			return publicUrl || null;
+		} catch (err) {
+			console.error("[UPLOAD] unexpected error:", err);
+			return null;
+		}
+	}
+
+	// save handler: upload (if needed), then call API with a proper http(s) url
 	const handleSave = async () => {
+		if (!profile) return;
 		setSaving(true);
 		try {
-			let avatarUrl = profile?.profile_picture;
+			console.log("[PROFILE] handleSave begin", {
+				avatarFile,
+				avatarPreview,
+				form,
+			});
+
+			let finalProfileUrl: string | undefined = undefined;
+
+			// 1) If a file is selected, upload and get public URL
 			if (avatarFile) {
-				// upload to supabase (public bucket "avatars")
-				const key = `public/${profile.id}/${Date.now()}_${avatarFile.name}`;
-				const { data, error: uploadError } = await supabase.storage
-					.from("avatars")
-					.upload(key, avatarFile, { upsert: true });
-				if (uploadError) {
-					console.warn("Avatar upload failed:", uploadError);
-				} else {
-					// get public URL (assuming bucket is public)
-					avatarUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${key}`;
+				const uploaded = await uploadAvatarToSupabase(avatarFile, profile.id);
+				if (!uploaded) {
+					// upload failed — inform the user and abort save (or you can continue without image)
+					alert("Avatar upload failed. Check console for details.");
+					setSaving(false);
+					return;
+				}
+				finalProfileUrl = uploaded;
+			}
+
+			// 2) If no file but user picked a default avatar (avatarPreview or form.profile_picture), ensure it is http
+			if (!finalProfileUrl) {
+				const candidate = avatarPreview || form.profile_picture;
+				if (
+					candidate &&
+					typeof candidate === "string" &&
+					candidate.startsWith("http")
+				) {
+					finalProfileUrl = candidate;
 				}
 			}
 
-			const payload: any = {
-				...form,
-				profile_picture: avatarUrl,
+			// 3) build payload (only send finalProfileUrl if it's an http(s) url)
+			const payload: Record<string, any> = {
+				full_name: form.full_name?.trim() || undefined,
+				phone_number: form.phone_number?.trim() || undefined,
+				location: form.location?.trim() || undefined,
 			};
+			if (finalProfileUrl) payload.profile_picture = finalProfileUrl;
+
+			console.log("[PROFILE] calling PUT /api/users/profile payload:", payload);
 
 			const res = await apiFetch("/api/users/profile", {
 				method: "PUT",
 				body: JSON.stringify(payload),
 			});
 
+			console.log("[PROFILE] apiFetch response:", res);
+
 			if (!res.ok) {
 				const j = await res.json().catch(() => ({}));
+				console.error("[PROFILE] update failed body:", j);
 				throw new Error(j?.message || "Failed to update profile");
 			}
 
+			// success: refetch profile
+			if (typeof refreshUser === "function") {
+				try {
+					await refreshUser();
+				} catch (e) {
+					console.warn("refreshUser failed", e);
+				}
+			}
 			await fetchProfile();
 			setEditing(false);
-		} catch (e: any) {
-			alert(e.message || "Failed to save");
+			alert("Profile updated successfully");
+		} catch (err: any) {
+			console.error("[PROFILE] save profile failed:", err);
+			alert(err?.message || "Failed to save profile");
 		} finally {
 			setSaving(false);
 		}
@@ -423,201 +289,295 @@ const Profile: React.FC = () => {
 			<main className='container py-4 md:py-6'>
 				<Card className='mb-4 animate-fade-in'>
 					<CardContent className='p-4'>
-						<div className='flex items-center gap-4'>
-							<Avatar className='h-16 w-16 border-2 border-primary'>
-								<AvatarImage
-									src={profile.profile_picture || undefined}
-									alt={profile.full_name}
-								/>
-								<AvatarFallback className='text-lg'>
-									{profile.full_name?.charAt(0)}
-								</AvatarFallback>
-							</Avatar>
-
-							<div className='flex-1 min-w-0'>
-								<div className='flex items-center gap-2'>
-									{!editing ? (
-										<h1 className='text-lg font-semibold text-foreground truncate'>
-											{profile.full_name}
-										</h1>
-									) : (
-										<input
-											value={form.full_name}
-											onChange={(e) =>
-												handleChange("full_name", e.target.value)
-											}
-											className='input input-bordered'
-										/>
-									)}
-									{isWorker && profile.is_verified && (
-										<Shield className='h-4 w-4 text-primary shrink-0' />
-									)}
-								</div>
-
-								{isWorker && (
-									<div className='flex items-center gap-2 mt-0.5'>
-										<Star className='h-4 w-4 fill-accent text-accent' />
-										<span className='text-sm font-medium'>
-											{profile.rating ?? 0}
-										</span>
-										<span className='text-sm text-muted-foreground'>
-											({profile.total_reviews ?? 0} reviews)
-										</span>
+						{/* VIEW MODE */}
+						{!editing && (
+							<div className='flex flex-col md:flex-row items-start md:items-center gap-4'>
+								<div className='flex items-center gap-4 w-full md:w-auto'>
+									<div className='relative'>
+										<Avatar className='h-20 w-20 md:h-28 md:w-28 border-2 border-primary'>
+											<AvatarImage
+												src={profile.profile_picture || undefined}
+												alt={profile.full_name}
+											/>
+											<AvatarFallback className='text-xl'>
+												{profile.full_name?.charAt(0)}
+											</AvatarFallback>
+										</Avatar>
 									</div>
-								)}
 
-								<div className='flex items-center gap-1 mt-1 text-sm text-muted-foreground'>
-									<MapPin className='h-3.5 w-3.5' />
-									{!editing ? (
-										<span>{profile.location || "-"}</span>
-									) : (
-										<input
-											value={form.location}
-											onChange={(e) => handleChange("location", e.target.value)}
-											className='input input-sm input-bordered'
-										/>
-									)}
-								</div>
-							</div>
+									<div className='flex-1 min-w-0'>
+										<div className='flex items-center gap-2'>
+											<h1 className='text-lg md:text-xl font-semibold text-foreground truncate'>
+												{profile.full_name}
+											</h1>
+											{isWorker && profile.is_verified && (
+												<Shield className='h-4 w-4 text-primary' />
+											)}
+										</div>
 
-							{!editing ? (
-								<Button
-									variant='outline'
-									size='sm'
-									onClick={() => setEditing(true)}>
-									Edit
-								</Button>
-							) : (
-								<div className='flex gap-2'>
-									<input
-										type='file'
-										accept='image/*'
-										onChange={(e) => setAvatarFile(e.target.files?.[0] || null)}
-									/>
-									<Button size='sm' onClick={handleSave} disabled={saving}>
-										{saving ? "Saving..." : "Save"}
-									</Button>
-									<Button
-										size='sm'
-										variant='ghost'
-										onClick={() => {
-											setEditing(false);
-											setForm({
-												full_name: profile.full_name,
-												phone_number: profile.phone_number,
-												location: profile.location,
-											});
-										}}>
-										Cancel
-									</Button>
-								</div>
-							)}
-						</div>
+										{isWorker && (
+											<div className='flex items-center gap-2 mt-1 text-sm text-muted-foreground'>
+												<Star className='h-4 w-4' />
+												<span className='font-medium'>
+													{profile.rating ?? 0}
+												</span>
+												<span>({profile.total_reviews ?? 0} reviews)</span>
+											</div>
+										)}
 
-						{/* Contact Info */}
-						<div className='flex flex-wrap gap-3 mt-4 pt-4 border-t border-border'>
-							<div className='flex items-center gap-1.5 text-sm text-muted-foreground'>
-								<Phone className='h-4 w-4' />
-								{!editing ? (
-									<span>{profile.phone_number || "-"}</span>
-								) : (
-									<input
-										value={form.phone_number}
-										onChange={(e) =>
-											handleChange("phone_number", e.target.value)
-										}
-										className='input input-sm input-bordered'
-									/>
-								)}
-							</div>
-							<div className='flex items-center gap-1.5 text-sm text-muted-foreground'>
-								<Mail className='h-4 w-4' />
-								<span>{profile.email}</span>
-							</div>
-						</div>
-
-						{/* Worker Services */}
-						{isWorker && profile.worker && (
-							<div className='mt-4 pt-4 border-t border-border'>
-								<p className='text-sm text-muted-foreground mb-2'>Services</p>
-								<div className='flex flex-wrap gap-2'>
-									{(profile.services || []).map((s: any) => (
-										<Badge key={s.id} variant='category'>
-											{s.name}
-										</Badge>
-									))}
+										<div className='mt-2 text-sm text-muted-foreground flex items-center gap-2'>
+											<MapPin className='h-4 w-4' />
+											<span className='truncate'>
+												{profile.location || "-"}
+											</span>
+										</div>
+									</div>
+									<div className='ml-auto flex items-center gap-2'>
+										<Button
+											variant='outline'
+											size='sm'
+											onClick={() => beginEdit()}>
+											Edit
+										</Button>
+									</div>
 								</div>
 							</div>
 						)}
+
+						{/* EDIT MODE: full form */}
+						{editing && (
+							<form
+								onSubmit={(e) => {
+									e.preventDefault();
+									handleSave();
+								}}
+								className='space-y-4 w-full'>
+								<div className='flex flex-col md:flex-row items-start gap-4'>
+									<div className='relative'>
+										<Avatar className='h-20 w-20 md:h-28 md:w-28 border-2 border-primary'>
+											<AvatarImage
+												src={
+													avatarPreview ||
+													form.profile_picture ||
+													profile.profile_picture ||
+													undefined
+												}
+												alt={form.full_name}
+											/>
+											<AvatarFallback className='text-xl'>
+												{(form.full_name || profile.full_name || "").charAt(0)}
+											</AvatarFallback>
+										</Avatar>
+
+										<button
+											type='button'
+											onClick={() => fileRef.current?.click()}
+											className='absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-md hover:scale-105 transition-transform'
+											aria-label='Upload avatar'>
+											<svg
+												className='h-5 w-5 text-muted-foreground'
+												viewBox='0 0 24 24'
+												fill='none'
+												stroke='currentColor'
+												strokeWidth='2'>
+												<path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
+												<polyline points='7 10 12 5 17 10' />
+												<line x1='12' y1='5' x2='12' y2='17' />
+											</svg>
+										</button>
+
+										<input
+											ref={fileRef}
+											type='file'
+											accept='image/*'
+											className='hidden'
+											onChange={(e) =>
+												handleFileSelect(e.target.files?.[0] || null)
+											}
+										/>
+									</div>
+
+									<div className='flex-1 min-w-0 space-y-3'>
+										<div>
+											<label className='text-sm font-medium text-foreground'>
+												Full name
+											</label>
+											<input
+												className='w-full rounded border px-3 py-2 mt-1'
+												value={form.full_name}
+												onChange={(e) =>
+													handleFieldChange("full_name", e.target.value)
+												}
+												required
+											/>
+										</div>
+
+										<div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
+											<div>
+												<label className='text-sm font-medium text-foreground'>
+													Phone
+												</label>
+												<input
+													className='w-full rounded border px-3 py-2 mt-1'
+													value={form.phone_number}
+													onChange={(e) =>
+														handleFieldChange("phone_number", e.target.value)
+													}
+												/>
+											</div>
+
+											<div>
+												<label className='text-sm font-medium text-foreground'>
+													Location
+												</label>
+												<input
+													className='w-full rounded border px-3 py-2 mt-1'
+													value={form.location}
+													onChange={(e) =>
+														handleFieldChange("location", e.target.value)
+													}
+												/>
+											</div>
+										</div>
+
+										<div>
+											<label className='text-sm font-medium text-foreground'>
+												Email
+											</label>
+											<input
+												type='email'
+												className='w-full rounded border px-3 py-2 mt-1'
+												value={form.email}
+												onChange={(e) =>
+													handleFieldChange("email", e.target.value)
+												}
+												required
+											/>
+										</div>
+
+										<div className='flex items-center gap-2 flex-wrap mt-2'>
+											<div className='text-sm text-muted-foreground'>
+												Or pick a default avatar:
+											</div>
+											<div className='flex gap-2'>
+												{DEFAULT_AVATARS.map((url) => (
+													<button
+														key={url}
+														type='button'
+														onClick={() => handleChooseDefaultAvatar(url)}
+														className={cn(
+															"rounded-full overflow-hidden border-2 p-0 transition-transform",
+															(avatarPreview || form.profile_picture) === url
+																? "border-primary scale-105"
+																: "border-transparent hover:scale-105"
+														)}
+														style={{ width: 44, height: 44 }}>
+														<img
+															src={url}
+															alt='avatar'
+															className='w-full h-full object-cover'
+														/>
+													</button>
+												))}
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div className='flex gap-3 justify-end'>
+									<Button variant='outline' onClick={cancelEdit} type='button'>
+										Cancel
+									</Button>
+									<Button type='submit' disabled={saving}>
+										{saving ? "Saving..." : "Save"}
+									</Button>
+								</div>
+							</form>
+						)}
+
+						{/* contact & services (shown in both modes) */}
+						<div className='mt-4 pt-4 border-t border-border grid gap-3'>
+							<div className='flex items-center gap-3 text-sm text-muted-foreground'>
+								<Phone className='h-4 w-4' />
+								<span>{profile.phone_number || "-"}</span>
+							</div>
+
+							<div className='flex items-center gap-3 text-sm text-muted-foreground'>
+								<Mail className='h-4 w-4' />
+								<span>{profile.email}</span>
+							</div>
+
+							{isWorker && profile.worker && (
+								<div className='pt-2 border-t border-border'>
+									<p className='text-sm text-muted-foreground mb-2'>Services</p>
+									<div className='flex flex-wrap gap-2'>
+										{(profile.services || []).map((s: any) => (
+											<Badge key={s.id} variant='category'>
+												{s.name}
+											</Badge>
+										))}
+									</div>
+								</div>
+							)}
+						</div>
 					</CardContent>
 				</Card>
 
-				{/* Menu Items */}
-				<div
-					className='space-y-2 animate-fade-in'
-					style={{ animationDelay: "100ms" }}>
+				{/* quick menu */}
+				<div className='space-y-3'>
 					<Card>
 						<CardContent className='p-2'>
-							<MenuItem
-								icon={User}
-								label='Personal Information'
-								description='Manage your personal details'
-							/>
-							<MenuItem
-								icon={Bell}
-								label='Notifications'
-								description='Customize notification preferences'
-							/>
-							<MenuItem
-								icon={CreditCard}
-								label='Payment Methods'
-								description='Add or manage payment options'
-							/>
-						</CardContent>
-					</Card>
+							<Link to='/settings' className='block'>
+								<div className='flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-colors'>
+									<div className='h-10 w-10 rounded-xl flex items-center justify-center bg-secondary'>
+										<Settings className='h-5 w-5' />
+									</div>
+									<div className='flex-1'>
+										<p className='font-medium'>Settings</p>
+										<p className='text-xs text-muted-foreground'>
+											Manage preferences and security
+										</p>
+									</div>
+									<ChevronRight className='h-4 w-4 text-muted-foreground' />
+								</div>
+							</Link>
 
-					<Card>
-						<CardContent className='p-2'>
-							<MenuItem
-								icon={Heart}
-								label='Favorites'
-								description='Your saved helpers'
-								badge='3'
-							/>
-							<MenuItem
-								icon={FileText}
-								label='Documents'
-								description='ID verification and certificates'
-							/>
-							<MenuItem
-								icon={Settings}
-								label='Settings'
-								description='App preferences and security'
-							/>
-						</CardContent>
-					</Card>
+							<Link to='/payments' className='block mt-2'>
+								<div className='flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-colors'>
+									<div className='h-10 w-10 rounded-xl flex items-center justify-center bg-secondary'>
+										<CreditCard className='h-5 w-5' />
+									</div>
+									<div className='flex-1'>
+										<p className='font-medium'>Payments</p>
+										<p className='text-xs text-muted-foreground'>
+											Add or manage payment methods
+										</p>
+									</div>
+									<ChevronRight className='h-4 w-4 text-muted-foreground' />
+								</div>
+							</Link>
 
-					<Card>
-						<CardContent className='p-2'>
-							<MenuItem
-								icon={HelpCircle}
-								label='Help & Support'
-								description='FAQs and customer support'
-							/>
-							<MenuItem
-								icon={LogOut}
-								label='Log Out'
-								danger
-								onClick={() => logout()}
-							/>
+							<div className='mt-2'>
+								<div
+									className='flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-colors'
+									onClick={() => logout()}>
+									<div className='h-10 w-10 rounded-xl flex items-center justify-center bg-destructive/10 text-destructive'>
+										<LogOut className='h-5 w-5' />
+									</div>
+									<div className='flex-1'>
+										<p className='font-medium text-destructive'>Log Out</p>
+										<p className='text-xs text-muted-foreground'>
+											Sign out of your account
+										</p>
+									</div>
+									<ChevronRight className='h-4 w-4 text-muted-foreground' />
+								</div>
+							</div>
 						</CardContent>
 					</Card>
 				</div>
 
-				{/* App Version */}
-				<p
-					className='text-center text-xs text-muted-foreground mt-6 animate-fade-in'
-					style={{ animationDelay: "200ms" }}>
+				<p className='text-center text-xs text-muted-foreground mt-6'>
 					QuickConnect v1.0.0
 				</p>
 			</main>

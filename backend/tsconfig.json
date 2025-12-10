@@ -12,6 +12,6 @@
 		"resolveJsonModule": true,
 		"moduleResolution": "node"
 	},
-	"include": ["src/**/*"],
+	"include": ["src/**/*", "../frontend-web/src/types/booking.ts"],
 	"exclude": ["node_modules"]
 }
