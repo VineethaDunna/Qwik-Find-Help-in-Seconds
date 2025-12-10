@@ -1,245 +1,146 @@
+# 🚀 Quick Connect – Generate Your Own Services Instantly
 
+Quick Connect is a **full-stack service-connecting platform** that helps users quickly **find, contact, and book skilled helpers** for everyday needs — all in seconds.
 
-```md
-# 🚀 Qwik – Find Help In Seconds
-
-
-QuickConnect is a full-stack platform that connects customers with local workers such as carpenters, electricians, drivers, beauticians, tailors, and more.  
-Users can instantly book workers, and workers get a dashboard to manage bookings, availability, services, and earnings.
+Instead of searching offline, asking neighbors, or waiting for recommendations, Quick Connect brings **speed, transparency, and convenience** to daily services through a modern web and mobile experience.
 
 ---
 
-## 📸 Screenshots
+## 📌 Problem Statement
 
-> Replace these placeholders with your actual screenshots inside `/public/images`.
+Finding trusted service providers for daily needs like repairs, cleaning, tailoring, driving, or farming assistance is often:
 
-![Home](./public/images/home.png)
-![Worker Dashboard](./public/images/worker-dashboard.png)
-![Booking Flow](./public/images/booking-flow.png)
+- Time-consuming
+- Unreliable
+- Dependent on word-of-mouth
+- Lacking price transparency
 
----
-
-## 🧰 Tech Stack
-
-### **Frontend**
-- React + TypeScript  
-- Vite  
-- TailwindCSS  
-- ShadCN UI  
-- React Router  
-- Lucide Icons  
-- Google Identity Services (Google Sign-In)
-
-### **Backend**
-- Node.js + Express  
-- TypeScript  
-- Supabase (PostgreSQL)  
-- Supabase Auth (Service Role)  
-- JWT Authentication (Access + Refresh Tokens)  
-- Google OAuth Token Verification  
-- Zod Validation Middleware
-
-### **Dev Tools**
-- Nodemon / ts-node  
-- Git & GitHub  
-- ESLint + Prettier  
-- Railway / Render (Backend)  
-- Vercel / Netlify (Frontend)
+Quick Connect solves this by creating a **real-time digital bridge** between people who _need services_ and people who _offer services_.
 
 ---
 
-## 🧩 Core Features
+## 🌟 What Quick Connect Provides
 
-### 🎯 User Features
-- Create account (Email or Google)  
-- Browse workers by service or location  
-- Book workers instantly  
-- Pricing transparency  
-- Track booking status  
-- Leave ratings and reviews  
+Quick Connect allows users to **generate their own services ecosystem** by:
 
-### 👨‍🔧 Worker Features
-- Service management (add/remove services)  
-- Custom service support  
-- Set hourly rate  
-- Add bio, experience, description  
-- Set availability for all weekdays (Mon–Sun)  
-- Manage bookings (accept/decline/complete)  
-- Customer history + analytics dashboard  
-- Earnings summary  
-- Edit profile anytime  
+- Discovering nearby helpers using location
+- Comparing prices instantly
+- Connecting via call or chat
+- Booking services without middlemen
 
-### 🔐 Authentication
-- Access Token + Refresh Token  
-- Google Sign-In (GSI SDK)  
-- Supabase database with secure row access  
-- Role-based (`user`, `worker`)
+It empowers helpers to earn independently while giving users fast access to trusted help.
 
 ---
 
-## 🏗 Project Structure
+## 🧩 Platform Overview
 
-```
+Quick Connect consists of **three major modules**:
 
-/
-├─ frontend/                # React + Vite client app
-│  ├─ src/
-│  │  ├─ components/       # UI components + shadcn
-│  │  ├─ pages/            # User & worker pages
-│  │  ├─ services/         # API wrapper
-│  │  └─ data/             # Mock data for UI
-│  └─ public/
-│
-├─ backend/                 # Express API
-│  ├─ src/
-│  │  ├─ controllers/      # Request handlers
-│  │  ├─ services/         # Business logic
-│  │  ├─ routes/           # Route definitions
-│  │  ├─ middleware/       # Auth + validation
-│  │  └─ config/           # JWT + Google + Supabase setup
-│  └─ package.json
-│
-└─ README.md
+### 👤 User App
 
-```
+- Find nearby service providers using location
+- View service details, charges, and availability
+- Call or message helpers instantly
+- Book services with ease
 
----
+### 🧰 Helper App
 
-## ⚙️ Environment Setup
+- Register and offer services
+- Set flexible pricing
+- Manage availability and bookings
+- Track daily earnings and requests
 
-### **Backend `.env`**
-```
+### 🛡️ Admin Dashboard
 
-PORT=5000
-
-SUPABASE_URL=[https://your-project.supabase.co](https://your-project.supabase.co)
-SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-
-GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-
-JWT_SECRET=supersecret_32_chars_minimum
-JWT_EXPIRES_IN=7d
-
-JWT_REFRESH_SECRET=another_supersecret_32_chars_minimum
-JWT_REFRESH_EXPIRES_IN=30d
-
-FRONTEND_URL=[http://localhost:8080](http://localhost:8080)
-CORS_ORIGIN=[http://localhost:8080](http://localhost:8080)
-
-```
-
-### **Frontend `.env`**
-```
-
-VITE_API_URL=[http://localhost:5000](http://localhost:5000)
-VITE_GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
-
-````
+- Verify helper profiles
+- Ensure safety and service quality
+- Handle disputes and reports
+- View analytics and platform insights
 
 ---
 
-## ▶️ Running the Project
+## 🧠 How It Works
 
-### **Backend**
-```bash
-cd backend
-npm install
-npm run dev
-````
+1. User opens Quick Connect
+2. Location is detected automatically
+3. Nearby helpers are displayed
+4. Prices and ratings are compared
+5. User calls or messages instantly
+6. Service is booked and completed
 
-### **Frontend**
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Open the app at:
-👉 [http://localhost:8080](http://localhost:8080)
+Simple. Fast. Reliable.
 
 ---
 
-## 🔌 API Endpoints Overview
+## ✅ Key Features
 
-### **AUTH**
-
-| Method | Endpoint             | Description            |
-| ------ | -------------------- | ---------------------- |
-| POST   | `/api/auth/register` | Register (user/worker) |
-| POST   | `/api/auth/login`    | Login                  |
-| POST   | `/api/auth/google`   | Google OAuth           |
-| POST   | `/api/auth/refresh`  | Refresh JWT            |
-| GET    | `/api/auth/me`       | Logged-in user         |
-
-### **WORKERS**
-
-| Method | Endpoint           | Description         |
-| ------ | ------------------ | ------------------- |
-| GET    | `/api/workers`     | Get all workers     |
-| GET    | `/api/workers/:id` | Get worker details  |
-| PUT    | `/api/workers/:id` | Edit worker profile |
-
-### **BOOKINGS**
-
-| Method | Endpoint                   | Description               |
-| ------ | -------------------------- | ------------------------- |
-| POST   | `/api/bookings`            | Create booking            |
-| PUT    | `/api/bookings/:id/status` | Accept, Decline, Complete |
-| GET    | `/api/bookings/user`       | User’s bookings           |
-| GET    | `/api/bookings/worker`     | Worker’s bookings         |
+- 📍 Location-based service discovery
+- ⚡ Real-time helper availability
+- 💰 Transparent & dynamic pricing
+- 📞 Instant call & chat support
+- 🧾 Booking management
+- ⭐ Ratings & reviews
+- 🔐 Secure admin verification
+- 📱 Web + Mobile support
 
 ---
 
-## 📦 Building for Production
+## 💡 When Quick Connect Helps Most
 
-### Frontend Build
-
-```bash
-npm run build
-```
-
-### Backend Build
-
-```bash
-npm run build
-npm start
-```
+- Emergency home repairs
+- Daily household services
+- Last-minute service needs
+- Urban & rural service access
+- Independent workers seeking income
 
 ---
 
-## 🚀 Deployment Guide
+## 🧪 Tech Stack
 
-### **Frontend (Vercel/Netlify)**
-
-* Set environment variables under project settings
-* Add backend API base URL
-* Allow Google OAuth domain
-
-### **Backend (Railway/Render)**
-
-* Add all `.env` variables
-* Allow CORS from the frontend domain
-* Add your production frontend URL to Google console
-
-### **Google OAuth Setup**
-
-1. Go to: [https://console.cloud.google.com](https://console.cloud.google.com)
-2. Create OAuth 2.0 credentials
-3. Add redirect URIs:
-
-   ```
-   http://localhost:8080
-   https://your-production-domain.com
-   ```
-4. Copy **Client ID** → set to frontend `.env`
+| Layer          | Technology                      |
+| -------------- | ------------------------------- |
+| Frontend (Web) | React.js, Next.js               |
+| Mobile App     | React Native (Expo)             |
+| Backend        | Node.js, Express.js             |
+| Database       | Supabase / PostgreSQL           |
+| APIs           | Real-time & location-based APIs |
+| Auth & Storage | Supabase                        |
 
 ---
 
-## 👑 Author
+## 🎯 Project Goals
 
-Made with ❤️ by **Vineetha**
+- Save people **time**
+- Reduce service **cost**
+- Enable **self-employment**
+- Replace offline search with smart discovery
+- Create a scalable service marketplace
 
+---
 
+## 🧑‍💻 Developer
+
+**Built by:**  
+**Dunna Vineetha**
+
+Aiming to create practical, real-world solutions using modern full-stack technologies.
+
+---
+
+## 🚧 Project Status
+
+- ✅ Web App: Active
+- ✅ Core backend & database
+- 🚧 Android App: In progress
+- 🚀 Future plans: Payments, AI recommendations, multilingual support
+
+---
+
+## 📄 License
+
+This project is developed for **educational and real-world application purposes**.  
+Feel free to explore, learn, and improve.
+
+---
+
+### ⭐ If you like this project, give it a star!
