@@ -1,5 +1,7 @@
 # 🚀 Quick Connect – Generate Your Own Services Instantly
 
+🌐 **Live:** https://qwik-one.vercel.app
+
 Quick Connect is a **full-stack service-connecting platform** that helps users quickly **find, contact, and book skilled helpers** for everyday needs — all in seconds.
 
 Instead of searching offline, asking neighbors, or waiting for recommendations, Quick Connect brings **speed, transparency, and convenience** to daily services through a modern web and mobile experience.
